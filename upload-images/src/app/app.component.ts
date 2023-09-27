@@ -12,6 +12,7 @@ export class AppComponent {
 
   public images: any = new Array; 
   public showImage: any;
+  public load:boolean = false;
 
   constructor(
     public sanitizer: DomSanitizer,
@@ -21,8 +22,9 @@ export class AppComponent {
   }
 
   public fileCharged(event: any): any{
-
     const image = event.target.files[0]; // Obtain image from event
+    this.load = true;
+
     
     this.images.push(image);
     this.extraerBase64(image).then(img => {
@@ -36,9 +38,11 @@ export class AppComponent {
 
     this.uploadService.uploadImage(this.images[0]).subscribe(response => {
       console.log(response);
+      this.load = false;
     },
     error => {
       console.log(error);
+      this.load = false;
     });
   }
 
