@@ -1,0 +1,13 @@
+
+
+<div>
+  <input (change)="fileCharged($event)" type="file" name="images">
+</div>
+<button type="button" (click)="sendImage()">
+  Cargar archivo
+</button>
+
+<div>
+  <img [src]="showImage" alt="">
+</div>
+
