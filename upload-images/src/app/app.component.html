@@ -7,7 +7,20 @@
   Cargar archivo
 </button>
 
+<div>
+  <form [formGroup]="imageForm">
+      <input type="text" formControlName="name">
+      <button type="button" (click)="getImage()">
+        Consultar imagen
+      </button>
+  </form>
+</div>
+
 <div *ngIf="load">
   <img [src]="showImage" alt="">
+</div>
+
+<div >
+  <img [src]="imageSearched" alt="">
 </div>
 

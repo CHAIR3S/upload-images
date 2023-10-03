@@ -1,6 +1,7 @@
 import { UploadService } from './Service/upload.service';
 import { Component } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
@@ -10,24 +11,29 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class AppComponent {
   title = 'upload-images';
 
-  public images: any = new Array; 
-  public showImage: any;
-  public load:boolean = false;
+  images: any = new Array; 
+  showImage: any;
+  imageSearched: any;
+  load:boolean = false;
+  imageForm: FormGroup;
 
   constructor(
     public sanitizer: DomSanitizer,
-    public uploadService: UploadService
+    public uploadService: UploadService,
+    public formBuilder: FormBuilder
     ){
-
-  }
+      this.imageForm = this.formBuilder.group({
+        name: ['', Validators.required]
+      });
+    }
 
   public fileCharged(event: any): any{
     const image = event.target.files[0]; // Obtain image from event
-    this.load = true;
+    this.load = true; //If image is charged in the input
 
     
     this.images.push(image);
-    this.extraerBase64(image).then(img => {
+    this.extractBase64(image).then(img => { //Serealize to Base64
       this.showImage = img.base;
     })
     
@@ -47,7 +53,22 @@ export class AppComponent {
   }
 
 
-  private extraerBase64: any = async ($event: any) => new Promise((resolve, reject) => {
+  public getImage(){
+    this.uploadService.getImageByName(this.imageForm.value.name)
+    .subscribe(image => {
+      this.extractBase64(image).then(img => {
+        this.imageSearched = img.base;
+        console.log(img);
+      })
+    },
+    error => {
+      console.log(error);
+    });
+
+  }
+
+
+  private extractBase64: any = async ($event: any) => new Promise((resolve, reject) => {
     try {
       //const image = this.sanitizer.bypassSecurityTrustUrl(unsafeImg);
       const reader = new FileReader();
@@ -66,7 +87,7 @@ export class AppComponent {
     } catch (error) {
       console.error('Error en extraerBase64:', error);
       resolve({
-        base: null // Asegura que haya un valor de retorno
+        base: null // Ensures return value
       });
     }
   })
